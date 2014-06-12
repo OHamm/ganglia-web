@@ -8,14 +8,15 @@
    <body>
       <h2>Testing metrics</h2>
       <buttons>
-      <button type="button" id="update" onclick="updateMetrics()">Update</button>
+      <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
       <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
-      <label><input type="number" id="interval"/>Interval</label>
+      <label><input type="number" id="interval"/>Interval(ms)</label>
       </buttons>
 
       <span id="metrics"></span>
 
       <script>
+      var timerId;
       //TODO add graphs && table
          function checkAutoUpdate(){
             //?? document.addEventListener(); ??
@@ -40,26 +41,29 @@
                var val = retrieveInterval();
                if(val != 0){
                   document.getElementById("update").value = "Stop";
-                  testingfun("AUTOUPDATE, INTERVAL: "+val);
+                  $('#update').text("Stop");
+                  timerId = setInterval(updateM, val)
                }
             }else{
                document.getElementById("update").value = "Update";
-               testingfun("STOPPED AUTOUPDATE");
+               $('#update').text("Update");
+               clearTimeout(timerId);
             }
          }
 
          function updateMetrics(){
             if(checkAutoUpdate()){
-               updateMetrics();
+               updateM();
             }else{
                autoUpdateMetrics();
             }
          }
-
+         //This is just here for testing purposes so I don't forget something while I code...
          function testingfun(txt){
             alert(txt);
          }
-         function updateMetrics(){
+
+         function updateM(){
             var Gmetad = "http://localhost:8652/status";
             $.ajax({
             url: Gmetad,
@@ -74,7 +78,7 @@
                if(key == "metrics" || key == "core" || key == "cpu" ||
                key == "disk" || key == "load" || key == "memory" ||
                key == "network" || key == "process" || key == "system" ||
-               key == "other"){
+               key == "other" || key == "received" || key == "sent"){
                   $('#metrics').append('<p>' + key + ':</p>')
                   jsonCallback(val);
                }else{
