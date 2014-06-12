@@ -4,7 +4,7 @@
    <head>
       <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
    </head>
-   
+
    <body>
       <h2>Testing metrics</h2>
       <buttons>
@@ -12,13 +12,16 @@
       <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
       <label><input type="number" id="interval"/>Interval</label>
       </buttons>
-      
+
+      <span id="metrics"></span>
+
       <script>
       //TODO add graphs && table
          function checkAutoUpdate(){
             //?? document.addEventListener(); ??
             return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
          }
+
          function retrieveInterval(){
             var val = document.getElementById("interval").value;
             if(isNaN(val)){
@@ -31,6 +34,7 @@
                return val;
             }
          }
+
          function autoUpdateMetrics(){
             if(document.getElementById("update").value == "Update"){
                var val = retrieveInterval();
@@ -43,19 +47,42 @@
                testingfun("STOPPED AUTOUPDATE");
             }
          }
+
          function updateMetrics(){
             if(checkAutoUpdate()){
-               alert("UPDATE METRICS");
+               updateMetrics();
             }else{
                autoUpdateMetrics();
             }
          }
+
          function testingfun(txt){
             alert(txt);
          }
-         (function(){})();
+         function updateMetrics(){
+            var Gmetad = "http://localhost:8652/status";
+            $.ajax({
+            url: Gmetad,
+            dataType: "jsonp",
+            contentType: "application/json",
+            jsonpCallback: "jsonCallback",
+            });
+         };
+         //This will be changed
+         function jsonCallback(data){
+            $.each(data, function(key, val) {
+               if(key == "metrics" || key == "core" || key == "cpu" ||
+               key == "disk" || key == "load" || key == "memory" ||
+               key == "network" || key == "process" || key == "system" ||
+               key == "other"){
+                  $('#metrics').append('<p>' + key + ':</p>')
+                  jsonCallback(val);
+               }else{
+                  $('#metrics').append('<p>' + key + ': ' + val + '</p>')
+               }
+            });
+         }
       </script>
-   
    </body>
-   
+
 </html>
