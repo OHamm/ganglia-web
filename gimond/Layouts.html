@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+   </head>
+   
+   <body>
+      <h2>Testing metrics</h2>
+      <buttons>
+      <button type="button" id="update" onclick="updateMetrics()">Update</button>
+      <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
+      <label><input type="number" id="interval"/>Interval</label>
+      </buttons>
+      
+      <script>
+      //TODO add graphs && table
+         function checkAutoUpdate(){
+            //?? document.addEventListener(); ??
+            return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
+         }
+         function retrieveInterval(){
+            var val = document.getElementById("interval").value;
+            if(isNaN(val)){
+               alert("This isn't a number");
+               return 0;
+            }else if(val <= 0){
+               alert("Interval should be > 0");
+               return 0;
+            }else{
+               return val;
+            }
+         }
+         function autoUpdateMetrics(){
+            if(document.getElementById("update").value == "Update"){
+               var val = retrieveInterval();
+               if(val != 0){
+                  document.getElementById("update").value = "Stop";
+                  testingfun("AUTOUPDATE, INTERVAL: "+val);
+               }
+            }else{
+               document.getElementById("update").value = "Update";
+               testingfun("STOPPED AUTOUPDATE");
+            }
+         }
+         function updateMetrics(){
+            if(checkAutoUpdate()){
+               alert("UPDATE METRICS");
+            }else{
+               autoUpdateMetrics();
+            }
+         }
+         function testingfun(txt){
+            alert(txt);
+         }
+         (function(){})();
+      </script>
+   
+   </body>
+   
+</html>
