@@ -55,6 +55,7 @@
             if(checkAutoUpdate()){
                updateM();
             }else{
+               updateM();
                autoUpdateMetrics();
             }
          }
@@ -72,19 +73,24 @@
             jsonpCallback: "jsonCallback",
             });
          };
-         //This will be changed
+
          function jsonCallback(data){
+            $("#metrics").html('<br>'+jsonCallbacksec(data));//will change with css
+         }
+         function jsonCallbacksec(data){
+         var txt = "";
             $.each(data, function(key, val) {
                if(key == "metrics" || key == "core" || key == "cpu" ||
                key == "disk" || key == "load" || key == "memory" ||
                key == "network" || key == "process" || key == "system" ||
                key == "other" || key == "received" || key == "sent"){
-                  $('#metrics').append('<p>' + key + ':</p>')
-                  jsonCallback(val);
+                  txt += "--" + key + "--" + '<br>';//will change with css
+                  txt += jsonCallbacksec(val);
                }else{
-                  $('#metrics').append('<p>' + key + ': ' + val + '</p>')
+                  txt += key + ': ' + val + '<br>';//will change with css
                }
             });
+            return txt;
          }
       </script>
    </body>
