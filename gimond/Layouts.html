@@ -2,7 +2,11 @@
 <html>
 
    <head>
+      <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+      <meta content="utf-8" http-equiv="encoding">
       <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+      <script type="text/javascript" src="d3.v3.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="stylesheet.css" />
    </head>
 
    <body>
@@ -11,25 +15,23 @@
       <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
       <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
       <label><input type="number" id="interval"/>Interval(ms)</label>
+      <label><input type="number" id="rows"/>Number of Rows</label>
       </buttons>
 
-      <span id="metrics"></span>
+      <span id="metrics" value=0></span>
 
-      <script>
+      <script type="text/javascript">
       var timerId;
       //TODO add graphs && table
          function checkAutoUpdate(){
-            //?? document.addEventListener(); ??
             return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
          }
 
-         function retrieveInterval(){
-            var val = document.getElementById("interval").value;
+         function retrieveVal(txt){
+            var val = document.getElementById(txt).value;
             if(isNaN(val)){
-               alert("This isn't a number");
                return 0;
             }else if(val <= 0){
-               alert("Interval should be > 0");
                return 0;
             }else{
                return val;
@@ -38,7 +40,7 @@
 
          function autoUpdateMetrics(){
             if(document.getElementById("update").value == "Update"){
-               var val = retrieveInterval();
+               var val = retrieveVal("interval");
                if(val != 0){
                   document.getElementById("update").value = "Stop";
                   $('#update').text("Stop");
@@ -50,7 +52,6 @@
                clearTimeout(timerId);
             }
          }
-
          function updateMetrics(){
             if(checkAutoUpdate()){
                updateM();
@@ -75,24 +76,56 @@
          };
 
          function jsonCallback(data){
-            $("#metrics").html('<br>'+jsonCallbacksec(data));//will change with css
+            if($("#metrics").attr('value') == 0){
+               var tmp = linearTableTh(data);
+               tmp += '<tr>' + linearTable(data) + '</tr>';
+               $("#metrics").html('<table>' + tmp + '</table>');
+            }else{
+               tmp += '<tr>' + linearTable(data) + '</tr>';
+               $("#metrics tr:nth-child(1)").after(tmp);
+            }
+            var val = retrieveVal("rows");
+            val = val > 0 ? val : 1;
+            var currentVal = $("#metrics").attr('value');
+            currentVal ++;
+            while(currentVal > val){
+               $("#metrics tr:last").remove();
+               currentVal --;
+            }
+            $("#metrics").attr('value', currentVal);
          }
-         function jsonCallbacksec(data){
-         var txt = "";
+         function linearTableTh(data){
+            var txt = "";
+            $.each(data, function(key, val) {
+               if(key == "metrics"){
+                  txt += linearTableTh(val);
+               }else if(key == "core" || key == "cpu" ||
+                  key == "disk" || key == "load" || key == "memory" ||
+                  key == "network" || key == "process" || key == "system" ||
+                  key == "other" || key == "received" || key == "sent"){
+                     txt += linearTableTh(val);
+               }else{
+                     txt +='<th>' + key + '</th>';//will change with css
+               }
+            });
+            return txt;
+         }
+         function linearTable(data){
+            var txt = "";
             $.each(data, function(key, val) {
                if(key == "metrics" || key == "core" || key == "cpu" ||
-               key == "disk" || key == "load" || key == "memory" ||
-               key == "network" || key == "process" || key == "system" ||
-               key == "other" || key == "received" || key == "sent"){
-                  txt += "--" + key + "--" + '<br>';//will change with css
-                  txt += jsonCallbacksec(val);
+                  key == "disk" || key == "load" || key == "memory" ||
+                  key == "network" || key == "process" || key == "system" ||
+                  key == "other" || key == "received" || key == "sent"){
+                     txt += linearTable(val);
                }else{
-                  txt += key + ': ' + val + '<br>';//will change with css
+                     txt +='<td>' + val + '</td>';//will change with css
                }
             });
             return txt;
          }
       </script>
+
    </body>
 
 </html>
