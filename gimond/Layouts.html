@@ -6,7 +6,7 @@
       <meta content="utf-8" http-equiv="encoding">
       <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
       <script type="text/javascript" src="d3.v3.min.js"></script>
-      <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+      <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
    </head>
 
    <body>
@@ -14,7 +14,7 @@
       <buttons>
       <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
       <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
-      <label><input type="number" id="interval"/>Interval(ms)</label>
+      <label><input type="number" id="interval"/>Interval(s)</label>
       <label><input type="number" id="rows"/>Number of Rows</label>
       </buttons>
 
@@ -22,6 +22,7 @@
 
       <script type="text/javascript">
       var timerId;
+      var nowTime;
       //TODO add graphs && table
          function checkAutoUpdate(){
             return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
@@ -44,7 +45,7 @@
                if(val != 0){
                   document.getElementById("update").value = "Stop";
                   $('#update').text("Stop");
-                  timerId = setInterval(updateM, val)
+                  timerId = setInterval(updateM, val * 1000);
                }
             }else{
                document.getElementById("update").value = "Update";
@@ -62,20 +63,27 @@
          }
          //This is just here for testing purposes so I don't forget something while I code...
          function testingfun(txt){
-            alert(txt);
+            console.log(txt);
          }
 
          function updateM(){
+            nowTime = $.now();
             var Gmetad = "http://localhost:8652/status";
             $.ajax({
+            type: "GET",
             url: Gmetad,
             dataType: "jsonp",
+            crossDomain: true,
             contentType: "application/json",
             jsonpCallback: "jsonCallback",
+            error: function(data, textStatus, jqXHR) { alert("Update crashed, please reload the page..."); console.log(textStatus + " " + jqXHR.responseText);}
+            /* If the logged error is "parsererror undefined", then the ajax() call couldn't parse the json data
+            because there was a conflict with another call to ajax(), and sometimes the metrics won't update anymore. */
             });
          };
 
          function jsonCallback(data){
+            testingfun(data);
             if($("#metrics").attr('value') == 0){
                var tmp = linearTableTh(data);
                tmp += '<tr>' + linearTable(data) + '</tr>';
@@ -104,6 +112,10 @@
                   key == "network" || key == "process" || key == "system" ||
                   key == "other" || key == "received" || key == "sent"){
                      txt += linearTableTh(val);
+               }else if(key == "localtime"){
+                  txt +='<th>' + key + '</th>';
+                  txt +='<th>call delay</th>';
+                  txt +='<th>metrics delay</th>';
                }else{
                      txt +='<th>' + key + '</th>';//will change with css
                }
@@ -118,6 +130,10 @@
                   key == "network" || key == "process" || key == "system" ||
                   key == "other" || key == "received" || key == "sent"){
                      txt += linearTable(val);
+               }else if(key == "localtime"){
+                  txt +='<td>' + val + '</td>';
+                  txt +='<td>' + ($.now()-nowTime) + '</td>';
+                  txt +='<td>' + ($.now()-val) + '</td>';
                }else{
                      txt +='<td>' + val + '</td>';//will change with css
                }
