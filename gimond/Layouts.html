@@ -5,7 +5,7 @@
       <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
       <meta content="utf-8" http-equiv="encoding">
       <script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
-      <script type="text/javascript" src="../js/d3.v3.min.js"></script>
+      <script type="text/javascript" src="../js/d3.v2.min.js"></script>
       <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
    </head>
 
@@ -19,11 +19,13 @@
       </buttons>
 
       <span id="metrics" value=0></span>
+      <span id="pocGraph"></span>
 
       <script type="text/javascript">
       var timerId;
       var nowTime;
-      //TODO add graphs && table
+      var arrData = [];
+      
          function checkAutoUpdate(){
             return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
          }
@@ -80,10 +82,20 @@
             /* If the logged error is "parsererror undefined", then the ajax() call couldn't parse the json data
             because there was a conflict with another call to ajax(), and sometimes the metrics won't update anymore. */
             });
-         };
+         }
+
+         function updateG(data){
+            arrData.push(updateGsec(data));
+            drawGraph("%CPU");
+         }
+
+         function updateGsec(data){
+            //loop over all the data going here
+            return [data.stattime, data.metrics.cpu.cpu_system];
+         }
 
          function jsonCallback(data){
-            testingfun(data);
+            updateG(data);
             if($("#metrics").attr('value') == 0){
                var tmp = linearTableTh(data);
                tmp += '<tr>' + linearTable(data) + '</tr>';
@@ -101,6 +113,7 @@
                currentVal --;
             }
             $("#metrics").attr('value', currentVal);
+
          }
          function linearTableTh(data){
             var txt = "";
@@ -139,6 +152,73 @@
                }
             });
             return txt;
+         }
+         
+      function drawGraph(label){
+         d3.selectAll("svg").remove();
+         var margin = {top: 20, right: 20, bottom: 30, left: 50},
+            width = 750 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
+
+         var x = d3.time.scale()
+            .range([0, width])
+
+         var y = d3.scale.linear()
+            .range([height, 0]);
+
+         var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+         var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+         var line = d3.svg.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.close); });
+
+         var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+         var data = arrData.map(function(d) {
+               return {
+                  date: d[0] / 1000,
+                  close: d[1]
+               };
+
+         });
+
+         x.domain(d3.extent(data, function(d) { return d.date; }));
+         y.domain(d3.extent(data, function(d) { return d.close; }));
+
+         svg.append("g")
+               .attr("class", "x axis")
+               .attr("transform", "translate(0," + height + ")")
+               .call(xAxis)
+            .append("text")
+               .attr("y", 6)
+               .attr("dy", ".71em")
+               .style("text-anchor", "end")
+               .text("Time");
+
+         svg.append("g")
+               .attr("class", "y axis")
+               .call(yAxis)
+            .append("text")
+               .attr("transform", "rotate(-90)")
+               .attr("y", 6)
+               .attr("dy", ".71em")
+               .style("text-anchor", "end")
+               .text(label);
+
+         svg.append("path")
+               .datum(data)
+               .attr("class", "line")
+               .attr("d", line);
          }
       </script>
 
