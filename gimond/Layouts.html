@@ -25,7 +25,7 @@
       var timerId;
       var nowTime;
       var arrData = [];
-      
+
          function checkAutoUpdate(){
             return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
          }
@@ -125,7 +125,7 @@
                   key == "network" || key == "process" || key == "system" ||
                   key == "other" || key == "received" || key == "sent"){
                      txt += linearTableTh(val);
-               }else if(key == "localtime"){
+               }else if(key == "stattime"){
                   txt +='<th>' + key + '</th>';
                   txt +='<th>call delay</th>';
                   txt +='<th>metrics delay</th>';
@@ -143,17 +143,18 @@
                   key == "network" || key == "process" || key == "system" ||
                   key == "other" || key == "received" || key == "sent"){
                      txt += linearTable(val);
-               }else if(key == "localtime"){
+               }else if(key == "stattime"){
                   txt +='<td>' + val + '</td>';
-                  txt +='<td>' + ($.now()-nowTime) + '</td>';
-                  txt +='<td>' + ($.now()-val) + '</td>';
+                  txt +='<td>' + ($.now() - nowTime) + '</td>';
+                  txt +='<td>' + ($.now() - val/1000) + '</td>';
+                  testingfun(val);
                }else{
                      txt +='<td>' + val + '</td>';//will change with css
                }
             });
             return txt;
          }
-         
+
       function drawGraph(label){
          d3.selectAll("svg").remove();
          var margin = {top: 20, right: 20, bottom: 30, left: 50},
