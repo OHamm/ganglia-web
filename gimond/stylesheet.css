@@ -16,3 +16,19 @@ th {
    background-color: gray;
    color: white;
 }
+body {
+   font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+   fill: none;
+   stroke: #000;
+   shape-rendering: crispEdges;
+}
+
+.line {
+   fill: none;
+   stroke: gray;
+   stroke-width: 2px;
+}
