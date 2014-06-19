@@ -145,11 +145,8 @@
                }else if(key == "stattime"){
                   txt +='<th>' + key + '</th>';
                   txt +='<th>call delay</th>';
-                  txt +='<th>metrics delay</th>';
                   arrData["call_delay"] = [];
-                  arrData["metrics_delay"] = [];
                   arrData["call_delay"].push([time, ($.now() - nowTime)]);
-                  arrData["metrics_delay"].push([time, ($.now() - val/1000)]);
                }else{
                   txt +='<th>' + key + '</th>';//will change with css
                   if(testkey(key)){
@@ -169,9 +166,7 @@
                }else if(key == "stattime"){
                   txt +='<td>' + val + '</td>';
                   txt +='<td>' + ($.now() - nowTime) + '</td>';
-                  txt +='<td>' + ($.now() - val/1000) + '</td>';
                   arrData["call_delay"].push([time, ($.now() - nowTime)]);
-                  arrData["metrics_delay"].push([time, ($.now() - val/1000)]);
                }else{
                   txt +='<td>' + val + '</td>';//will change with css
                   if(testkey(key)){
