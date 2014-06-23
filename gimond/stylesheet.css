@@ -16,6 +16,14 @@ th {
    background-color: gray;
    color: white;
 }
+th button {
+   text-align: center;
+   font: 10px sans-serif;
+   display:block;
+   border:0;
+   background:none;
+   outline:0;
+}
 body {
    font: 10px sans-serif;
 }

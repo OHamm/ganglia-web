@@ -16,7 +16,6 @@
       <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
       <label><input type="number" id="interval"/>Interval (s)</label>
       <label><input type="number" id="rows"/>Number of Rows</label>
-      <label><input type="number" id="timespawn"/>Timespawn (s)</label>
       </buttons>
 
       <span id="metrics" value=-1></span>
@@ -27,6 +26,7 @@
          var nowTime;
          var timeSpawn = -1;
          var arrData = {};
+         var graphShown = {};
 
          function checkAutoUpdate(){
             return !document.getElementById("autoUpdateCheck").checked && document.getElementById("update").value == "Update";
@@ -34,21 +34,12 @@
 
          function retrieveVal(txt){
             var val = document.getElementById(txt).value;
-            if(isNaN(val)){
-               return 0;
-            }else if(val <= 0){
-               return 0;
-            }else{
-               return val;
-            }
+            return (isNaN(val) || val <= 0) ? 0 : val;
          }
 
          function autoUpdateMetrics(){
             if(document.getElementById("update").value == "Update"){
                var val = retrieveVal("interval");
-               if(timeSpawn == -1){
-                  timeSpawn = retrieveVal("timespawn");
-               }
                if(val != 0){
                   document.getElementById("update").value = "Stop";
                   $('#update').text("Stop");
@@ -90,51 +81,47 @@
             });
          }
 
-         function updateG(data){
-            $.each(arrData, function(key, val) {
-               drawGraph(key, val);
-            });
-         }
          var speedKeyUp = {"host":false, "gridname":false, "version":false, "boottime":false, "uptime":false,
          "uptimeMillis":false, "cpu_num":false, "cpu_speed":false, "disk_total":false, "mem_total":false,
          "swap_total":false, "sys_clock":false, "machine_type":false, "os_name":false, "os_release":false};
          function testkey(key){
-            if(speedKeyUp.hasOwnProperty(key)){
-               return false;
-            }else{
-               return true;
-            }
+            return !speedKeyUp.hasOwnProperty(key);
          }
+
          var speedMetricUp = {"metrics":false, "core":false, "cpu":false, "disk":false, "load":false, "memory":false, "network":false,
          "process":false, "system":false, "other":false, "received":false, "sent":false};
          function testmetric(key){
-            if(speedMetricUp.hasOwnProperty(key)){
-               return true;
-            }else{
-               return false;
-            }
+            return speedMetricUp.hasOwnProperty(key);
          }
 
          function jsonCallback(data){
             if($("#metrics").attr('value') == -1){
-               var tmp = linearTableTh(data, data.stattime);
-               tmp += '<tr>' + linearTable(data, data.stattime) + '</tr>';
+               var tmp = linearTableTh(data, data.stattime/1000);
+               tmp += '<tr>' + linearTable(data, data.stattime/1000) + '</tr>';
                $("#metrics").html('<table>' + tmp + '</table>');
                $("#metrics").attr('value', 0);
             }else{
-               tmp += '<tr>' + linearTable(data, data.stattime) + '</tr>';
+               tmp += '<tr>' + linearTable(data, data.stattime/1000) + '</tr>';
                $("#metrics tr:nth-child(1)").after(tmp);
+               $("#metrics").attr('value', +$("#metrics").attr('value') + 1);
             }
             var val = retrieveVal("rows");
             val = val > 0 ? val : 1;
-            var currentVal = $("#metrics").attr('value');
-            currentVal ++;
-            while(currentVal > val){
+            var currentVal = +$("#metrics").attr('value');
+            while(currentVal >= val){
                $("#metrics tr:last").remove();
                currentVal --;
             }
             $("#metrics").attr('value', currentVal);
-            updateG(data);
+         }
+
+         function turnGraphOnOff(key){
+            graphShown[key] = !graphShown[key];
+            if(graphShown[key]){
+               drawGraph(key, arrData[key]);
+            }else{
+               d3.select("#"+key).remove();
+            }
          }
 
          function linearTableTh(data, time){
@@ -144,14 +131,18 @@
                      txt += linearTableTh(val, time);
                }else if(key == "stattime"){
                   txt +='<th>' + key + '</th>';
-                  txt +='<th>call delay</th>';
                   arrData["call_delay"] = [];
                   arrData["call_delay"].push([time, ($.now() - nowTime)]);
+                  txt +='<th><button onclick="turnGraphOnOff(\'call_delay\')">call_delay</button></th>';
+                  graphShown["call_delay"] = false;
                }else{
-                  txt +='<th>' + key + '</th>';//will change with css
                   if(testkey(key)){
+                     txt +='<th><button onclick="turnGraphOnOff(\'' + key + '\')">' + key + '</button></th>';
+                     graphShown[key] = false;
                      arrData[key] = [];
                      arrData[key].push([time, val]);
+                  }else{
+                     txt +='<th>' + key + '</th>';
                   }
                }
             });
@@ -167,24 +158,23 @@
                   txt +='<td>' + val + '</td>';
                   txt +='<td>' + ($.now() - nowTime) + '</td>';
                   arrData["call_delay"].push([time, ($.now() - nowTime)]);
+                  if(graphShown["call_delay"]){
+                     drawGraph("call_delay", arrData["call_delay"]);
+                  }
                }else{
-                  txt +='<td>' + val + '</td>';//will change with css
+                  txt +='<td>' + val + '</td>';
                   if(testkey(key)){
                      arrData[key].push([time, val]);
+                     if(graphShown[key]){
+                        drawGraph(key, arrData[key]);
+                     }
                   }
                }
             });
             return txt;
          }
 
-      function testTime(val){
-         if(timeSpawn > 0){
-            return $.now() - timeSpawn <= val ? val : null;
-         }
-         return val;
-      }
-
-      function drawGraph(label, arr){
+      function drawGraph(label, data){
          d3.select("#"+label).remove();
 
          var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -206,8 +196,8 @@
             .orient("left");
 
          var line = d3.svg.line()
-            .x(function(d) { return x(d.date); })
-            .y(function(d) { return y(d.close); });
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[1]); });
 
          var svg = d3.select("body").append("svg")
             .attr("id",label)
@@ -216,15 +206,8 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-         var data = arr.map(function(d) {
-            return {
-               date: d[0] / 1000,
-               close: d[1]
-            };
-         });
-
-         x.domain(d3.extent(data, function(d) { return d.date; }));
-         y.domain(d3.extent(data, function(d) { return d.close; }));
+         x.domain(d3.extent(data, function(d) { return d[0]; }));
+         y.domain(d3.extent(data, function(d) { return d[1]; }));
 
          svg.append("g")
                .attr("class", "x axis")
@@ -250,7 +233,7 @@
                .datum(data)
                .attr("class", "line")
                .attr("d", line);
-         }
+      }
       </script>
 
    </body>
