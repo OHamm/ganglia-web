@@ -4,18 +4,18 @@ table {
    border-collapse: collapse;
    border-spacing: 0;
 }
-table {
-   margin: auto;
-}
+
 table, td, th {
    padding: 7px;
    text-align: center;
    border: 1px solid black;
 }
+
 th {
    background-color: gray;
    color: white;
 }
+
 th button {
    text-align: center;
    font: 10px sans-serif;
@@ -24,6 +24,7 @@ th button {
    background:none;
    outline:0;
 }
+
 body {
    font: 10px sans-serif;
 }

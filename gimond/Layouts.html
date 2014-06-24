@@ -18,13 +18,24 @@
       <label><input type="number" id="rows"/>Number of Rows</label>
       </buttons>
 
-      <span id="metrics" value=-1></span>
-      <span id="pocGraph"></span>
+      <span id="metrics" value=-1>
+         <table id="general"></table>
+         <table id="core"></table>
+         <table id="cpu"></table>
+         <table id="disk"></table>
+         <table id="load"></table>
+         <table id="memory"></table>
+         <table id="network"></table>
+         <table id="process"></table>
+         <table id="system"></table>
+         <table id="other"></table>
+         <table id="received"></table>
+         <table id="sent"></table>
+      </span>
 
       <script type="text/javascript">
          var timerId;
          var nowTime;
-         var timeSpawn = -1;
          var arrData = {};
          var graphShown = {};
 
@@ -48,7 +59,6 @@
             }else{
                document.getElementById("update").value = "Update";
                $('#update').text("Update");
-               timeSpawn = -1;
                clearTimeout(timerId);
             }
          }
@@ -67,7 +77,7 @@
 
          function updateM(){
             nowTime = $.now();
-            var Gmetad = "http://"+window.location.hostname+":8652/status";
+            var Gmetad = "http://" + window.location.hostname + ":8652/status";
             $.ajax({
             type: "GET",
             url: Gmetad,
@@ -88,7 +98,7 @@
             return !speedKeyUp.hasOwnProperty(key);
          }
 
-         var speedMetricUp = {"metrics":false, "core":false, "cpu":false, "disk":false, "load":false, "memory":false, "network":false,
+         var speedMetricUp = {"core":false, "cpu":false, "disk":false, "load":false, "memory":false, "network":false,
          "process":false, "system":false, "other":false, "received":false, "sent":false};
          function testmetric(key){
             return speedMetricUp.hasOwnProperty(key);
@@ -96,23 +106,25 @@
 
          function jsonCallback(data){
             if($("#metrics").attr('value') == -1){
-               var tmp = linearTableTh(data, data.stattime/1000);
-               tmp += '<tr>' + linearTable(data, data.stattime/1000) + '</tr>';
-               $("#metrics").html('<table>' + tmp + '</table>');
+               $("#metrics").html(linearTableTh(data, data.stattime/1000));
                $("#metrics").attr('value', 0);
+               linearTable(data, data.stattime/1000);
             }else{
-               tmp += '<tr>' + linearTable(data, data.stattime/1000) + '</tr>';
-               $("#metrics tr:nth-child(1)").after(tmp);
+               linearTable(data, data.stattime/1000);
                $("#metrics").attr('value', +$("#metrics").attr('value') + 1);
             }
             var val = retrieveVal("rows");
             val = val > 0 ? val : 1;
             var currentVal = +$("#metrics").attr('value');
-            while(currentVal >= val){
-               $("#metrics tr:last").remove();
-               currentVal --;
-            }
-            $("#metrics").attr('value', currentVal);
+            var currentVarTmp;
+            $.each($("#metrics table"),function(){
+               currentVarTmp = currentVal;
+               while(currentVarTmp >= val){
+                  $("#metrics #" + this.id + " tr:last").remove();
+                  currentVarTmp --;
+               }
+            });
+            $("#metrics").attr('value', currentVarTmp);
          }
 
          function turnGraphOnOff(key){
@@ -127,8 +139,11 @@
          function linearTableTh(data, time){
             var txt = "";
             $.each(data, function(key, val) {
-               if(testmetric(key)){
-                     txt += linearTableTh(val, time);
+               if(key == "metrics"){
+                  txt = '<table id="general">' + txt + '</table>';
+                  txt += linearTableTh(val, time);
+               }else if(testmetric(key)){
+                  txt += '<table id="' + key + '">' + linearTableTh(val, time) + '</table>';
                }else if(key == "stattime"){
                   txt +='<th>' + key + '</th>';
                   arrData["call_delay"] = [];
@@ -152,8 +167,11 @@
          function linearTable(data, time){
             var txt = "";
             $.each(data, function(key, val) {
-               if(testmetric(key)){
-                     txt += linearTable(val, time);
+               if(key == "metrics"){
+                  $("#metrics #general tr:nth-child(1)").after('<tr>' + txt + '</tr>');
+                  linearTable(val, time);
+               }else if(testmetric(key)){
+                  $("#metrics #" + key + " tr:nth-child(1)").after('<tr>' + linearTable(val, time) + '</tr>');
                }else if(key == "stattime"){
                   txt +='<td>' + val + '</td>';
                   txt +='<td>' + ($.now() - nowTime) + '</td>';
