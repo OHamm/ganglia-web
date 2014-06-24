@@ -10,28 +10,17 @@
    </head>
 
    <body>
-      <h2>Testing metrics</h2>
-      <buttons>
-      <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
-      <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
-      <label><input type="number" id="interval"/>Interval (s)</label>
-      <label><input type="number" id="rows"/>Number of Rows</label>
-      </buttons>
+      <h2>Gmetad's metrics monitoring page</h2>
+      <div id="buttons">
+         <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
+         <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
+         <label><input type="number" id="interval"/>Interval (s)</label>
+         <label><input type="number" id="rows"/>Number of Rows</label>
+         <label><input type="number" id="graphs_width"/>Width of graphs (px)</label>
+         <label><input type="number" id="graphs_height"/>Height of graphs (px)</label>
+      </div>
 
-      <span id="metrics" value=-1>
-         <table id="general"></table>
-         <table id="core"></table>
-         <table id="cpu"></table>
-         <table id="disk"></table>
-         <table id="load"></table>
-         <table id="memory"></table>
-         <table id="network"></table>
-         <table id="process"></table>
-         <table id="system"></table>
-         <table id="other"></table>
-         <table id="received"></table>
-         <table id="sent"></table>
-      </span>
+      <span id="metrics" value=-1></span>
 
       <script type="text/javascript">
          var timerId;
@@ -140,10 +129,10 @@
             var txt = "";
             $.each(data, function(key, val) {
                if(key == "metrics"){
-                  txt = '<table id="general">' + txt + '</table>';
+                  txt = '<h1>general:</h1><table id="general">' + txt + '</table>';
                   txt += linearTableTh(val, time);
                }else if(testmetric(key)){
-                  txt += '<table id="' + key + '">' + linearTableTh(val, time) + '</table>';
+                  txt += '<h1>' + key + ':</h1><table id="' + key + '">' + linearTableTh(val, time) + '</table>';
                }else if(key == "stattime"){
                   txt +='<th>' + key + '</th>';
                   arrData["call_delay"] = [];
@@ -194,10 +183,12 @@
 
       function drawGraph(label, data){
          d3.select("#"+label).remove();
+         var tmpWidth = retrieveVal("graphs_width");
+         var tmpHeight = retrieveVal("graphs_height");
 
          var margin = {top: 20, right: 20, bottom: 30, left: 50},
-            width = 750 - margin.left - margin.right,
-            height = 300 - margin.top - margin.bottom;
+            width = (tmpWidth > 0 ? tmpWidth : 700) - margin.left - margin.right,
+            height = (tmpHeight > 0 ? tmpHeight : 300) - margin.top - margin.bottom;
 
          var x = d3.time.scale()
             .range([0, width])
@@ -252,6 +243,10 @@
                .attr("class", "line")
                .attr("d", line);
       }
+
+      window.onload = function() {
+         updateM();
+      };
       </script>
 
    </body>

@@ -25,6 +25,17 @@ th button {
    outline:0;
 }
 
+div {
+   width: 300px;
+   height: 300px;
+   float:right;
+   display: block;
+   clear: both;
+   position: fixed;
+   top: 30px;
+   right: 5px;
+}
+
 body {
    font: 10px sans-serif;
 }
