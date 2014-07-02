@@ -43,7 +43,7 @@
         $("#page_title").text(title);
         });
     }
-
+//TODO: add internal
     function refresh() {
       var selected_tab = $("#selected_tab").val();
       if (selected_tab == "agg") {
@@ -73,6 +73,9 @@
           g_refresh_timer = setTimeout("refresh()", {$refresh} * 1000);
         } else
           ganglia_form.submit();
+      } else if(selected_tab == "int"){
+         refreshHeader();
+         alert("SUP");
       } else
         ganglia_form.submit();
     }
@@ -94,7 +97,7 @@
 
       g_tabIndex = new Object();
       g_tabName = [];
-      var tabName = ["m", "s", "v", "agg", "ch", "ev", "rot", "mob"];
+      var tabName = ["m", "s", "v", "agg", "ch", "ev", "rot", "mob", "int"];
       var j = 0;
       for (var i in tabName) {
         if (tabName[i] == "ev" && !g_overlay_events)
@@ -251,6 +254,8 @@
       <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">Automatic Rotation</a></li>
       <li><a href="#tabs-livedashboard" onclick="liveDashboardChooser();">Live Dashboard</a></li>
       <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">Mobile</a></li>
+      <li><a href="gimond/Internal.html">Internal</a></li>
+      <!-- TODO: Fix it -->
     </ul>
   </div>
 
