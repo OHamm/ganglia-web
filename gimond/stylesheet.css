@@ -1,22 +1,27 @@
-table {
+#metricsStyle table {
    font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
    box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
    border-collapse: collapse;
    border-spacing: 0;
 }
 
-table, td, th {
+#metricsStyle table, #metricsStyle td, #metricsStyle th {
    padding: 7px;
    text-align: center;
    border: 1px solid black;
 }
 
-th {
+#metricsStyle th {
    background-color: gray;
    color: white;
 }
 
-th button {
+#metricsStyle h1 {
+   font: 20px sans-serif bold;
+   color: black;
+}
+
+#metricsStyle th button {
    text-align: center;
    font: 10px sans-serif;
    display:block;
@@ -24,8 +29,10 @@ th button {
    background:none;
    outline:0;
 }
-
-div {
+#metricsStyle li, #metricsStyle ul {
+   list-style-type: none;
+}
+#metricsStyle div {
    width: 300px;
    height: 300px;
    float:right;
@@ -36,7 +43,7 @@ div {
    right: 5px;
 }
 
-body {
+#metricsStyle body {
    font: 10px sans-serif;
 }
 

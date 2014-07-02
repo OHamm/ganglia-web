@@ -7,19 +7,61 @@
       <script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
       <script type="text/javascript" src="../js/d3.v2.min.js"></script>
       <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+      <link rel="stylesheet" type="text/css" href="gimond/stylesheet.css"/>
    </head>
 
    <body>
-      <h2>Gmetad's metrics monitoring page</h2>
+   <div id="metricsStyle" name="int">
       <div id="buttons">
-         <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
-         <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
-         <label><input type="number" id="interval"/>Interval (s)</label>
-         <label><input type="number" id="rows"/>Number of Rows</label>
-         <label><input type="number" id="graphs_width"/>Width of graphs (px)</label>
-         <label><input type="number" id="graphs_height"/>Height of graphs (px)</label>
+         <ul>
+            <li>
+               <button type="button" id="update" value="Update" onclick="updateMetrics()">Update</button>
+               <label><input type="checkbox" id="autoUpdateCheck">Auto Update</label>
+               <label>
+                  <select id="interval">
+                     <option value=2>2</option>
+                     <option value=5>5</option>
+                     <option value=15>15</option>
+                     <option value=30>30</option>
+                     <option value=60>60</option>
+                  </select>
+               Interval (s)</label>
+            </li>
+            <li>
+               <label>
+                  <select id="rows">
+                     <option value=1>1</option>
+                     <option value=5>5</option>
+                     <option value=10>10</option>
+                     <option value=20>20</option>
+                     <option value=50>50</option>
+                     <option value=100>100</option>
+                  </select>
+               Number of Rows</label>
+            </li>
+            <li>
+               <label>
+                  <select id="graph_size">
+                     <option value="small">small</option>
+                     <option value="normal">normal</option>
+                     <option value="big">big</option>
+                     <option value="huge">huge</option>
+                     <option value="manual">manual</option>
+                  </select>
+               Graph size</label>
+               <!-- Insert this ul in manual when clicked -->
+               <ul>
+                  <li>
+                     <label><input type="number" id="graphs_width"/>Width of graphs (px)</label>
+                  </li>
+                  <li>
+                     <label><input type="number" id="graphs_height"/>Height of graphs (px)</label>
+                  </li>
+               </ul>
+            </li>
+         </ul>
       </div>
-
+      
       <span id="metrics" value=-1></span>
 
       <script type="text/javascript">
@@ -36,10 +78,34 @@
             var val = document.getElementById(txt).value;
             return (isNaN(val) || val <= 0) ? 0 : val;
          }
+         
+         function retrieveDropVal(txt){
+            var e = document.getElementById(txt);
+            return e.options[e.selectedIndex].value;
+         }
+         
+         function retriveGraphSize(){
+            switch (retrieveDropVal("graph_size")){
+               case "small":
+                  return [300, 150];
+               case "normal":
+                  return [600, 300];
+               case "big":
+                  return [900, 400];
+               case "huge":
+                  return [1500, 400];
+               case "manual":
+                  var tmpWidth = retrieveVal("graphs_width");
+                  var tmpHeight = retrieveVal("graphs_height");
+                  return [(tmpWidth > 0 ? tmpWidth : 600), (tmpHeight > 0 ? tmpHeight : 300)];
+               default:
+                  return [300, 150];
+            }
+         }
 
          function autoUpdateMetrics(){
             if(document.getElementById("update").value == "Update"){
-               var val = retrieveVal("interval");
+               var val = retrieveDropVal("interval");
                if(val != 0){
                   document.getElementById("update").value = "Stop";
                   $('#update').text("Stop");
@@ -102,7 +168,7 @@
                linearTable(data, data.stattime/1000);
                $("#metrics").attr('value', +$("#metrics").attr('value') + 1);
             }
-            var val = retrieveVal("rows");
+            var val = retrieveDropVal("rows");
             val = val > 0 ? val : 1;
             var currentVal = +$("#metrics").attr('value');
             var currentVarTmp;
@@ -183,12 +249,11 @@
 
       function drawGraph(label, data){
          d3.select("#"+label).remove();
-         var tmpWidth = retrieveVal("graphs_width");
-         var tmpHeight = retrieveVal("graphs_height");
+         var tmpSize = retriveGraphSize();
 
          var margin = {top: 20, right: 20, bottom: 30, left: 50},
-            width = (tmpWidth > 0 ? tmpWidth : 700) - margin.left - margin.right,
-            height = (tmpHeight > 0 ? tmpHeight : 300) - margin.top - margin.bottom;
+            width = tmpSize[0] - margin.left - margin.right,
+            height = tmpSize[1] - margin.top - margin.bottom;
 
          var x = d3.time.scale()
             .range([0, width])
@@ -248,7 +313,7 @@
          updateM();
       };
       </script>
-
+   </div>
    </body>
 
 </html>
