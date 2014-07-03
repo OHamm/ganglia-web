@@ -23,28 +23,34 @@
 
 #metricsStyle th button {
    text-align: center;
-   font: 10px sans-serif;
+   font: 15px sans-serif;
    display:block;
    border:0;
    background:none;
    outline:0;
 }
+
 #metricsStyle li, #metricsStyle ul {
    list-style-type: none;
 }
+
 #metricsStyle div {
-   width: 300px;
+   width: 350px;
    height: 300px;
    float:right;
    display: block;
    clear: both;
    position: fixed;
-   top: 30px;
+   top: 50px;
    right: 5px;
 }
 
 #metricsStyle body {
    font: 10px sans-serif;
+}
+
+#metricsStyle ul.manualGraphSize {
+   display: none;
 }
 
 .axis path,

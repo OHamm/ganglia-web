@@ -254,7 +254,7 @@
       <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">Automatic Rotation</a></li>
       <li><a href="#tabs-livedashboard" onclick="liveDashboardChooser();">Live Dashboard</a></li>
       <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">Mobile</a></li>
-      <li><a href="gimond/Internal.html">Internal</a></li>
+      <li><a href="gimond/Internal.html"">Internal</a></li>
       <!-- TODO: Fix it -->
     </ul>
   </div>
