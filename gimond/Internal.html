@@ -281,7 +281,7 @@
             .x(function(d) { return x(d[0]); })
             .y(function(d) { return y(d[1]); });
 
-         var svg = d3.select("body").append("svg")
+         var svg = d3.select("#metrics").insert("svg")
             .attr("id",label)
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
