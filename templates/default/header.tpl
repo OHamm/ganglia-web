@@ -78,6 +78,7 @@
           ganglia_form.submit();
          }
       } else if (selected_tab == "int") {
+         g_refresh_timer = setTimeout("refresh()", {$refresh} * 1000);
          /*
             There is nothing to be done here.
             IMPORTANT: do not delete this test because the else{} case should not be called
@@ -149,7 +150,7 @@
             $("#selected_tab").val(g_tabName[tabIndex]);
             if (g_tabName[tabIndex] != "mob"){
               $.cookie("ganglia-selected-tab-" + window.name, tabIndex);
-            }
+            } 
             if (tabIndex == g_tabIndex["m"] ||
               tabIndex == g_tabIndex["v"] ||
               tabIndex == g_tabIndex["ch"]){
@@ -159,7 +160,7 @@
         });
       }
     });
-
+    
   $(function () {
     $("#metrics-picker").val("{$metric_name}");
     $(".header_btn").button();
