@@ -59,8 +59,9 @@
         } else if ($.isFunction(window.refreshDecomposeGraph)) {
           refreshDecomposeGraph();
           g_refresh_timer = setTimeout("refresh()", {$refresh} * 1000);
-        } else
+        } else {
           ganglia_form.submit();
+         }
       } else if (selected_tab == "ev") {
         refreshOverlayEvent();
         g_refresh_timer = setTimeout("refresh()", {$refresh} * 1000);
@@ -73,10 +74,17 @@
           refreshHeader();
           refreshHostView();
           g_refresh_timer = setTimeout("refresh()", {$refresh} * 1000);
-        } else
+        } else {
           ganglia_form.submit();
-      } else
+         }
+      } else if (selected_tab == "int") {
+         /*
+            There is nothing to be done here.
+            IMPORTANT: do not delete this test because the else{} case should not be called
+         */
+      } else {
         ganglia_form.submit();
+      }
     }
 
     $(function() {
@@ -96,7 +104,7 @@
 
       g_tabIndex = new Object();
       g_tabName = [];
-      var tabName = ["m", "s", "v", "agg", "ch", "ev", "rot", "mob"];
+      var tabName = ["m", "s", "v", "agg", "ch", "ev", "rot", "lid", "mob", "int"];
       var j = 0;
       for (var i in tabName) {
         if (tabName[i] == "ev" && !g_overlay_events)
@@ -115,7 +123,14 @@
         if (typeof g_tabIndex[selected_tab] != 'undefined') {
           try {
             //alert("Selecting tab: " + selected_tab);
-            tabs.tabs('option', 'active', g_tabIndex[selected_tab]);
+            if(selected_tab == "mob"){
+               /*
+               This can be changed to work, but not with the default code behavior.
+               */
+               tabs.tabs('option', 'active', g_tabIndex["m"]);
+            } else{
+               tabs.tabs('option', 'active', g_tabIndex[selected_tab]);
+            }
             if (selected_tab == "rot")
               autoRotationChooser();
           } catch (err) {
@@ -132,12 +147,14 @@
           function(event, ui) {
             var tabIndex = ui.newTab.index();
             $("#selected_tab").val(g_tabName[tabIndex]);
-            if (g_tabName[tabIndex] != "mob")
+            if (g_tabName[tabIndex] != "mob"){
               $.cookie("ganglia-selected-tab-" + window.name, tabIndex);
+            }
             if (tabIndex == g_tabIndex["m"] ||
               tabIndex == g_tabIndex["v"] ||
-              tabIndex == g_tabIndex["ch"])
+              tabIndex == g_tabIndex["ch"]){
               ganglia_form.submit();
+            }
           }
         });
       }
@@ -253,7 +270,7 @@
       <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">Automatic Rotation</a></li>
       <li><a href="#tabs-livedashboard" onclick="liveDashboardChooser();">Live Dashboard</a></li>
       <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">Mobile</a></li>
-      <li><a href="gimond/Internal.html">Internal</a></li>
+      <li><a href="gimond/Internal.html" onclick="refreshHeader();">Internal</a></li>
       <!-- TODO: Fix it -->
     </ul>
   </div>
