@@ -6,14 +6,15 @@
 }
 
 #metricsStyle table, #metricsStyle td, #metricsStyle th {
-   padding: 7px;
+   padding: 5px;
    text-align: center;
    border: 1px solid black;
 }
 
 #metricsStyle th {
-   background-color: gray;
-   color: white;
+   background-color: #B8B8B8;
+   color: #505050;
+   font: 15px sans-serif;
 }
 
 #metricsStyle h1 {
@@ -24,33 +25,36 @@
 #metricsStyle th button {
    text-align: center;
    font: 15px sans-serif;
-   display:block;
-   border:0;
-   background:none;
-   outline:0;
+   display: block;
+   border: 0;
+   background: none;
+   outline: 0;
+   color: black;
 }
 
 #metricsStyle li, #metricsStyle ul {
    list-style-type: none;
+   padding: 0;
+   margin: 0;
 }
 
 #metricsStyle div {
-   width: 350px;
-   height: 300px;
-   float:right;
+   float: right;
    display: block;
    clear: both;
    position: fixed;
-   top: 50px;
    right: 5px;
 }
 
-#metricsStyle body {
-   font: 10px sans-serif;
+#metricsStyle #buttons {
+   border: 1px solid black;
+   background: #D0D0D0;
+   padding: 2px;
 }
 
 #metricsStyle ul.manualGraphSize {
    display: none;
+   margin-top: 2px;
 }
 
 .axis path,
