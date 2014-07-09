@@ -126,6 +126,7 @@
                clearTimeout(timerId);
             }
          }
+         
          function updateMetrics(){
             if(checkAutoUpdate()){
                updateM();
@@ -133,10 +134,6 @@
                updateM();
                autoUpdateMetrics();
             }
-         }
-         //This is just here for testing purposes so I don't forget something while I code...
-         function testingfun(txt){
-            console.log(txt);
          }
 
          function updateM(){
@@ -271,9 +268,9 @@
       function drawGraph(label, data){
          d3.select("#"+label).remove();
          var tmpSize = retriveGraphSize();
-            checkTimeSpawn(data);
-
-         var margin = {top: 20, right: 20, bottom: 30, left: 50},
+         checkTimeSpawn(data);
+         /* If values are overlapping or are cut, this can be tweaked here */
+         var margin = {top: 20, right: 10, bottom: 20, left: 80},
             width = tmpSize[0] - margin.left - margin.right,
             height = tmpSize[1] - margin.top - margin.bottom;
 
