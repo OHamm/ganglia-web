@@ -199,6 +199,7 @@
 
          function linearTableTh(data, time){
             var txt = "";
+            var myNow = $.now();
             $.each(data, function(key, val) {
                if(key == "metrics"){
                   txt = '<h1>general:</h1><table id="general">' + txt + '</table>';
@@ -208,7 +209,7 @@
                }else if(key == "stattime"){
                   txt +='<th>' + key + '</th>';
                   arrData["call_delay"] = [];
-                  arrData["call_delay"].push([time, ($.now() - nowTime)]);
+                  arrData["call_delay"].push([time, (myNow - nowTime)]);
                   txt +='<th><button onclick="turnGraphOnOff(\'call_delay\')">call_delay</button></th>';
                   graphShown["call_delay"] = false;
                }else{
@@ -227,6 +228,7 @@
 
          function linearTable(data, time){
             var txt = "";
+            var myNow = $.now();
             $.each(data, function(key, val) {
                if(key == "metrics"){
                   $("#metrics #general tr:nth-child(1)").after('<tr>' + txt + '</tr>');
@@ -235,8 +237,8 @@
                   $("#metrics #" + key + " tr:nth-child(1)").after('<tr>' + linearTable(val, time) + '</tr>');
                }else if(key == "stattime"){
                   txt +='<td>' + val + '</td>';
-                  txt +='<td>' + ($.now() - nowTime) + '</td>';
-                  arrData["call_delay"].push([time, ($.now() - nowTime)]);
+                  txt +='<td>' + (myNow - nowTime) + '</td>';
+                  arrData["call_delay"].push([time, (myNow - nowTime)]);
                   if(graphShown["call_delay"]){
                      drawGraph("call_delay", arrData["call_delay"]);
                   }
