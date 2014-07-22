@@ -155,7 +155,8 @@
          /* These metrics don't need a graph */
          var speedKeyUp = {"host":false, "gridname":false, "version":false, "boottime":false, "uptime":false,
          "uptimeMillis":false, "cpu_num":false, "cpu_speed":false, "disk_total":false, "mem_total":false,
-         "swap_total":false, "sys_clock":false, "machine_type":false, "os_name":false, "os_release":false};
+         "swap_total":false, "sys_clock":false, "machine_type":false, "os_name":false, "os_release":false,
+         "lastTime":false};
          function testkey(key){
             return !speedKeyUp.hasOwnProperty(key);
          }
