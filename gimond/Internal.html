@@ -156,14 +156,15 @@
          var speedKeyUp = {"host":false, "gridname":false, "version":false, "boottime":false, "uptime":false,
          "uptimeMillis":false, "cpu_num":false, "cpu_speed":false, "disk_total":false, "mem_total":false,
          "swap_total":false, "sys_clock":false, "machine_type":false, "os_name":false, "os_release":false,
-         "lastTime":false};
+         "lastTime":false, "num":false};
          function testkey(key){
             return !speedKeyUp.hasOwnProperty(key);
          }
          
          /* These values are where there is a nest in the JSON */
          var speedMetricUp = {"core":false, "cpu":false, "disk":false, "load":false, "memory":false, "network":false,
-         "process":false, "system":false, "other":false, "received":false, "sent":false, "summarize":false};
+         "process":false, "system":false, "other":false, "received":false, "sent":false, "summarize":false, "requests":false,
+         "requests_all":false, "requests_interactive":false, "requests_xml":false};
          function testmetric(key){
             return speedMetricUp.hasOwnProperty(key);
          }
@@ -207,6 +208,8 @@
                if(key == "metrics"){
                   txt = '<h1>general:</h1><table id="general">' + txt + '</table>';
                   txt += linearTableTh(val, time);
+               }else if(key == "requests"){
+                  txt += linearTableTh(val, time);
                }else if(testmetric(key)){
                   txt += '<h1>' + key + ':</h1><table id="' + key + '">' + linearTableTh(val, time) + '</table>';
                }else if(key == "stattime"){
@@ -236,6 +239,8 @@
                if(key == "metrics"){
                   $("#metrics #general tr:nth-child(1)").after('<tr>' + txt + '</tr>');
                   linearTable(val, time);
+               }else if(key == "requests"){
+                   linearTable(val, time);
                }else if(testmetric(key)){
                   $("#metrics #" + key + " tr:nth-child(1)").after('<tr>' + linearTable(val, time) + '</tr>');
                }else if(key == "stattime"){
