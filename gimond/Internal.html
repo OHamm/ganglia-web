@@ -151,14 +151,16 @@
             because there was a conflict with another call to ajax(), and sometimes the metrics won't update anymore. */
             });
          }
-
+         
+         /* These metrics don't need a graph */
          var speedKeyUp = {"host":false, "gridname":false, "version":false, "boottime":false, "uptime":false,
          "uptimeMillis":false, "cpu_num":false, "cpu_speed":false, "disk_total":false, "mem_total":false,
          "swap_total":false, "sys_clock":false, "machine_type":false, "os_name":false, "os_release":false};
          function testkey(key){
             return !speedKeyUp.hasOwnProperty(key);
          }
-
+         
+         /* These values are where there is a nest in the JSON */
          var speedMetricUp = {"core":false, "cpu":false, "disk":false, "load":false, "memory":false, "network":false,
          "process":false, "system":false, "other":false, "received":false, "sent":false, "summarize":false};
          function testmetric(key){
